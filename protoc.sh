@@ -1,3 +1,3 @@
 #!/bin/sh
 
-protoc -I=./pbrpc --python_out=./pbrpc ./pbrpc/*.proto
+protoc -I=./protocol --python_out=./pbrpc ./protocol/pbrpc.proto
