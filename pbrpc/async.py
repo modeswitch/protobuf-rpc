@@ -38,12 +38,12 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 		d = Deferred()
 		d.addCallback( self.unserialize_response, responseClass )
 		d.addCallback( done )
-		self._pending[ id ] = d
+		self._pending[ self.id ] = d
 		rpc = Rpc()
 		rpcRequest = rpc.request.add()
 		rpcRequest.method = methodDescriptor.name
 		rpcRequest.serialized_request = request.SerializeToString()
-		rpcRequest.id = id
+		rpcRequest.id = self.id
 		self.sendString( rpc.SerializeToString() )
 
 	def stringReceived( self, data ):

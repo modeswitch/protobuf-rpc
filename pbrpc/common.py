@@ -18,9 +18,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from google.protobof.service import RpcController
+from google.protobuf.service import RpcController
 
-class Controller( google.protobuf.service.RpcController ):
+class Controller( RpcController ):
 	def Reset( self ):
 		pass
 
