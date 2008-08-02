@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 from test_pb2 import *
-from pbrpc.async import Factory
+from pbrpc.twisted import Factory
 from twisted.application import service, internet
 
 class EchoService( Test ):

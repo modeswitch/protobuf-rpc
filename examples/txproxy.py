@@ -22,7 +22,7 @@ from test_pb2 import *
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred, DeferredList
 from twisted.internet.protocol import ClientCreator
-from pbrpc.async import Protocol, Proxy
+from pbrpc.twisted import Protocol, Proxy
 from google.protobuf.text_format import *
 
 if __name__ == "__main__":
