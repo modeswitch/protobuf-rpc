@@ -8,6 +8,16 @@ message EchoResponse {
     required string text = 1;
 }
 
-service Test {
+message PingRequest {
+}
+
+message PingResponse {
+}
+
+service EchoTest {
     rpc Echo( EchoRequest ) returns( EchoResponse );
+}
+
+service PingTest {
+    rpc Ping( PingRequest ) returns( PingResponse );
 }

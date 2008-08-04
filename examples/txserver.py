@@ -19,19 +19,22 @@
 # THE SOFTWARE.
 
 from test_pb2 import *
-from pbrpc.twisted import Factory
+from pbrpc.tx import Factory
 from twisted.application import service, internet
 
-class EchoService( Test ):
-    def __init__( self ):
-        Test.__init__( self )
-
+class EchoService( EchoTest ):
     def Echo( self, rpc_controller, request, done ):
         response = EchoResponse()
         response.text = request.text
         done( response )
 
+class PingService( PingTest ):
+    def Ping( self, rpc_controller, request, done ):
+        response = PingResponse()
+	done( response )
+
 echoService = EchoService()
-factory = Factory( echoService )
-application = service.Application( "EchoService" )
+pingService = PingService()
+factory = Factory( echoService, pingService )
+application = service.Application( "Test Services" )
 internet.TCPServer( 8080, factory ).setServiceParent( application )

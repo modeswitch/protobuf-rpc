@@ -41,7 +41,7 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 		self._pending[ self.id ] = d
 		rpc = Rpc()
 		rpcRequest = rpc.request.add()
-		rpcRequest.method = methodDescriptor.name
+		rpcRequest.method = methodDescriptor.containing_service.name + '.' + methodDescriptor.name
 		rpcRequest.serialized_request = request.SerializeToString()
 		rpcRequest.id = self.id
 		self.sendString( rpc.SerializeToString() )
@@ -50,16 +50,17 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 		rpc = Rpc()
 		rpc.ParseFromString( data )
 		for serializedRequest in rpc.request:
-			method = self.service.GetDescriptor().FindMethodByName( serializedRequest.method )
+			service = self._services[ serializedRequest.method.split( '.' )[ 0 ] ]
+			method = service.GetDescriptor().FindMethodByName( serializedRequest.method.split( '.' )[ 1 ] )
 			if method:
-				request = self.service.GetRequestClass( method )()
+				request = service.GetRequestClass( method )()
 				request.ParseFromString( serializedRequest.serialized_request )
 				controller = Controller()
 				d = Deferred()
 				d.addCallback( self.serialize_response, serializedRequest )
 				d.addCallback( self.serialize_rpc )
 				d.addCallback( lambda rpc: self.sendString( rpc.SerializeToString() ) )
-				self.service.CallMethod( method, controller, request, d.callback )
+				service.CallMethod( method, controller, request, d.callback )
 		for serializedResponse in rpc.response:
 			id = serializedResponse.id
 			if self._pending.has_key( id ):
@@ -86,28 +87,39 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 class Factory( twisted.internet.protocol.Factory ):
 	protocol = Protocol
 
-	def __init__( self, service ):
+	def __init__( self, *services ):
 		self._protocols = []
-		self._service = service
+		self._services = {}
+		for s in services:
+			self._services[ s.GetDescriptor().name ] = s
 	
 	def buildProtocol( self, addr ):
 		p = self.protocol()
 		p.factory = self
-		p.service = self._service
+		p._services = self._services
 		self._protocols.append( p )
 		return p
 
 class Proxy( object ):
-	def __init__( self, stub ):
-		self._stub = stub
+	class _Proxy( object ):
+		def __init__( self, stub ):
+			self._stub = stub
+
+		def __getattr__( self, key ):
+			def call( method, request ):
+				d = Deferred()
+				controller = Controller()
+				method( controller, request, d.callback )
+				return d
+			return lambda request: call( getattr( self._stub, key ), request )
+
+	def __init__( self, *stubs ):
+		self._stubs = {}
+		for s in stubs:
+			self._stubs[ s.GetDescriptor().name ] = self._Proxy( s )
 	
 	def __getattr__( self, key ):
-		def call( method, request ):
-			d = Deferred()
-			controller = Controller()
-			method( controller, request, d.callback )
-			return d
-		return lambda request: call( getattr( self._stub, key ), request )
+		return self._stubs[ key ]
 
 class Server( object ):
 	def __init__( self, service, port, iface = '' ):

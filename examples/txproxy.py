@@ -22,22 +22,32 @@ from test_pb2 import *
 from twisted.internet import reactor
 from twisted.internet.defer import Deferred, DeferredList
 from twisted.internet.protocol import ClientCreator
-from pbrpc.twisted import Protocol, Proxy
+from pbrpc.tx import Protocol, Proxy
 from google.protobuf.text_format import *
 
 if __name__ == "__main__":
 	c = ClientCreator( reactor, Protocol )
 	d = c.connectTCP( "localhost", 8080 )
+	def print_response( response ):
+		print "response:", MessageToString( response )
 	def client_connected( protocol ):
-		proxy = Proxy( Test_Stub( protocol ) )
+		proxy = Proxy( EchoTest_Stub( protocol ), PingTest_Stub( protocol ) )
+
 		request = EchoRequest()
 		request.text = "Hello world!"
-		d = proxy.Echo( request )
-		return d
-	d.addCallback( client_connected )
-	def print_response( response ):
-		print MessageToString( response )
+		echoed = proxy.EchoTest.Echo( request )
+		echoed.addCallback( print_response )
+
+		request = PingRequest()
+		pinged = proxy.PingTest.Ping( request )
+		pinged.addCallback( print_response )
+
+		dl = DeferredList( [ echoed, pinged ] )
+		dl.addCallback( client_finished )
+
+		return dl
+	def client_finished( dl ):
 		reactor.stop()
-	d.addCallback( print_response )
+	d.addCallback( client_connected )
 	
 	reactor.run()

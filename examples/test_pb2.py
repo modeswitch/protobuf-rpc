@@ -54,6 +54,36 @@ _ECHORESPONSE = descriptor.Descriptor(
   options=None)
 
 
+_PINGREQUEST = descriptor.Descriptor(
+  name='PingRequest',
+  full_name='test.PingRequest',
+  filename='test.proto',
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
+_PINGRESPONSE = descriptor.Descriptor(
+  name='PingResponse',
+  full_name='test.PingResponse',
+  filename='test.proto',
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],  # TODO(robinson): Implement.
+  enum_types=[
+  ],
+  options=None)
+
+
 
 class EchoRequest(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -63,16 +93,24 @@ class EchoResponse(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
   DESCRIPTOR = _ECHORESPONSE
 
+class PingRequest(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PINGREQUEST
 
-_TEST = descriptor.ServiceDescriptor(
-  name='Test',
-  full_name='test.Test',
+class PingResponse(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  DESCRIPTOR = _PINGRESPONSE
+
+
+_ECHOTEST = descriptor.ServiceDescriptor(
+  name='EchoTest',
+  full_name='test.EchoTest',
   index=0,
   options=None,
   methods=[
   descriptor.MethodDescriptor(
     name='Echo',
-    full_name='test.Test.Echo',
+    full_name='test.EchoTest.Echo',
     index=0,
     containing_service=None,
     input_type=_ECHOREQUEST,
@@ -81,10 +119,35 @@ _TEST = descriptor.ServiceDescriptor(
   ),
 ])
 
-class Test(service.Service):
+class EchoTest(service.Service):
   __metaclass__ = service_reflection.GeneratedServiceType
-  DESCRIPTOR = _TEST
-class Test_Stub(Test):
+  DESCRIPTOR = _ECHOTEST
+class EchoTest_Stub(EchoTest):
   __metaclass__ = service_reflection.GeneratedServiceStubType
-  DESCRIPTOR = _TEST
+  DESCRIPTOR = _ECHOTEST
+
+
+_PINGTEST = descriptor.ServiceDescriptor(
+  name='PingTest',
+  full_name='test.PingTest',
+  index=1,
+  options=None,
+  methods=[
+  descriptor.MethodDescriptor(
+    name='Ping',
+    full_name='test.PingTest.Ping',
+    index=0,
+    containing_service=None,
+    input_type=_PINGREQUEST,
+    output_type=_PINGRESPONSE,
+    options=None,
+  ),
+])
+
+class PingTest(service.Service):
+  __metaclass__ = service_reflection.GeneratedServiceType
+  DESCRIPTOR = _PINGTEST
+class PingTest_Stub(PingTest):
+  __metaclass__ = service_reflection.GeneratedServiceStubType
+  DESCRIPTOR = _PINGTEST
 
