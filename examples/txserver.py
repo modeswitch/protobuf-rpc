@@ -22,19 +22,29 @@ from test_pb2 import *
 from pbrpc.tx import Factory
 from twisted.application import service, internet
 
-class EchoService( EchoTest ):
+class TestService( Test ):
     def Echo( self, rpc_controller, request, done ):
         response = EchoResponse()
         response.text = request.text
         done( response )
 
-class PingService( PingTest ):
     def Ping( self, rpc_controller, request, done ):
         response = PingResponse()
 	done( response )
 
-echoService = EchoService()
-pingService = PingService()
-factory = Factory( echoService, pingService )
+class MathService( Math ):
+    def Add( self, rpc_controller, request, done ):
+        response = MathResponse()
+        response.result = request.first + request.second
+        done( response )
+
+    def Multiply( self, rpc_controller, request, done ):
+        response = MathResponse()
+        response.result = request.first * request.second
+        done( response )
+
+testService = TestService()
+mathService = MathService()
+factory = Factory( testService, mathService )
 application = service.Application( "Test Services" )
 internet.TCPServer( 8080, factory ).setServiceParent( application )

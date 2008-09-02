@@ -14,10 +14,21 @@ message PingRequest {
 message PingResponse {
 }
 
-service EchoTest {
+message MathBinaryOperationRequest {
+    required float first = 0;
+    required float second = 1;
+}
+
+message MathResponse {
+    required float result = 0;
+}
+
+service Test {
+    rpc Ping( PingRequest ) returns( PingResponse );
     rpc Echo( EchoRequest ) returns( EchoResponse );
 }
 
-service PingTest {
-    rpc Ping( PingRequest ) returns( PingResponse );
+service Math {
+    rpc Add( MathBinaryOperationRequest ) returns( MathResponse );
+    rpc Multiply( MathBinaryOperationRequest ) returns( MathResponse );
 }

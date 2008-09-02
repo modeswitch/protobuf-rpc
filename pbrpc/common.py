@@ -42,3 +42,6 @@ class Controller( RpcController ):
 	def NotifyOnCancel( self, callback ):
 		pass
 
+class ServiceContainer( dict ):
+	def __getattr__( self, key ):
+		return self[ key ] 
