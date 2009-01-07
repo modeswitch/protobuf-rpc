@@ -24,7 +24,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.protocols.basic import Int32StringReceiver
 import google.protobuf.service
-from pbrpc_pb2 import Rpc, Request, Response, Error
+from protobufrpc_pb2 import Rpc, Request, Response, Error
 from common import Controller
 
 def flatten( l ):
