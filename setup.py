@@ -2,8 +2,8 @@
 
 from setuptools import setup, find_packages
 setup(
-	name = "pbrpc",
+	name = "protobufrpc",
 	version = "0.1",
 	packages = find_packages(),
-#	package_dir = { "" : "pbrpc" },
+#	package_dir = { "" : "protobufrpc" },
 )

@@ -19,7 +19,7 @@
 # THE SOFTWARE.
 
 from test_pb2 import *
-from pbrpc.tx import Factory
+from protobufrpc.tx import Factory
 from twisted.application import service, internet
 
 class TestService( Test ):
