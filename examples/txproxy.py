@@ -31,26 +31,24 @@ if __name__ == "__main__":
 	def print_response( response ):
 		print "response:", MessageToString( response )
 	def client_connected( protocol ):
-		proxy = ServiceContainer()
-		proxy.test = Proxy( Test_Stub( protocol ) )
-		proxy.math = Proxy( Math_Stub( protocol ) )
+		proxy = Proxy( Test_Stub( protocol ), Math_Stub( protocol ))
 
 		request = EchoRequest()
 		request.text = "Hello world!"
-		echoed = proxy.test.Echo( request )
+		echoed = proxy.Test.Echo( request )
 		echoed.addCallback( print_response )
 
 		request = PingRequest()
-		pinged = proxy.test.Ping( request )
+		pinged = proxy.Test.Ping( request )
 		pinged.addCallback( print_response )
 
 		request = MathBinaryOperationRequest()
 		request.first = 2;
 		request.second = 2;
-		mathAddd = proxy.math.Add( request )
+		mathAddd = proxy.Math.Add( request )
 		mathAddd.addCallback( print_response )
 
-		mathMultiplyd = proxy.math.Multiply( request )
+		mathMultiplyd = proxy.Math.Multiply( request )
 		mathMultiplyd.addCallback( print_response )
 
 		dl = DeferredList( [ echoed, pinged, mathAddd, mathMultiplyd ] )
