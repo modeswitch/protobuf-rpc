@@ -27,6 +27,15 @@ import google.protobuf.service
 from pbrpc_pb2 import Rpc, Request, Response, Error
 from common import Controller
 
+def flatten( l ):
+	result = []
+	for i in l:
+		if hasattr( i, "__iter__" ) and not isinstance( i, basestring ):
+			result.extend( flatten( i ) )
+		else:
+			result.append( i )
+	return result
+
 class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 	id = 0
 	def __init__( self ):

@@ -15,12 +15,12 @@ message PingResponse {
 }
 
 message MathBinaryOperationRequest {
-    required float first = 0;
-    required float second = 1;
+    required float first = 1;
+    required float second = 2;
 }
 
 message MathResponse {
-    required float result = 0;
+    required float result = 1;
 }
 
 service Test {
