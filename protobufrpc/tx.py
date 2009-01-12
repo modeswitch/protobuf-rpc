@@ -27,16 +27,9 @@ import google.protobuf.service
 from protobufrpc_pb2 import Rpc, Request, Response, Error
 from common import Controller
 
-def flatten( l ):
-	result = []
-	for i in l:
-		if hasattr( i, "__iter__" ) and not isinstance( i, basestring ):
-			result.extend( flatten( i ) )
-		else:
-			result.append( i )
-	return result
+__all__ = [ "TcpChannel", "Proxy", "Factory" ]
 
-class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
+class TcpChannel( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 	id = 0
 	def __init__( self ):
 		google.protobuf.service.RpcChannel.__init__( self )
@@ -54,7 +47,7 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 		rpcRequest.serialized_request = request.SerializeToString()
 		rpcRequest.id = self.id
 		self.sendString( rpc.SerializeToString() )
-
+	
 	def stringReceived( self, data ):
 		rpc = Rpc()
 		rpc.ParseFromString( data )
@@ -94,7 +87,7 @@ class Protocol( google.protobuf.service.RpcChannel, Int32StringReceiver ):
 		return rpc
 	
 class Factory( twisted.internet.protocol.Factory ):
-	protocol = Protocol
+	protocol = TcpChannel
 
 	def __init__( self, *services ):
 		self._protocols = []
@@ -129,17 +122,3 @@ class Proxy( object ):
 	
 	def __getattr__( self, key ):
 		return self._stubs[ key ]
-
-class Server( object ):
-	def __init__( self, service, port, iface = '' ):
-		self._service = service
-		self._factory = Factory( self._service )
-		self._port = reactor.listenTCP( port, self._factory, 50, iface )
-		self._protocols = []
-	
-	def shutdown( self ):
-		for protocol in self._protocols:
-			protocol.transport.loseConnection()
-		for protocol in self._factory._protocols():
-			protocol.transport.loseConnection()
-		self._port.stopListening()

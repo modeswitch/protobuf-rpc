@@ -19,44 +19,17 @@
 # THE SOFTWARE.
 
 from test_pb2 import *
-from twisted.internet import reactor
-from twisted.internet.defer import Deferred, DeferredList
-from twisted.internet.protocol import ClientCreator
-from protobufrpc.tx import TcpChannel, Proxy
+from protobufrpc.synchronous import Proxy, TcpChannel
 from google.protobuf.text_format import *
+from sys import stdout
+import inspect
 
 if __name__ == "__main__":
-	c = ClientCreator( reactor, TcpChannel )
-	d = c.connectTCP( "localhost", 8080 )
-	def print_response( response ):
-		print "response:", MessageToString( response )
-	def client_connected( protocol ):
-		proxy = Proxy( Test_Stub( protocol ), Math_Stub( protocol ))
+	channel = TcpChannel( ("localhost", 8080) )
+	proxy = Proxy( Test_Stub( channel ))
 
-		request = EchoRequest()
-		request.text = "Hello world!"
-		echoed = proxy.Test.Echo( request )
-		echoed.addCallback( print_response )
-
-		request = PingRequest()
-		pinged = proxy.Test.Ping( request )
-		pinged.addCallback( print_response )
-
-		request = MathBinaryOperationRequest()
-		request.first = 2;
-		request.second = 2;
-		mathAddd = proxy.Math.Add( request )
-		mathAddd.addCallback( print_response )
-
-		mathMultiplyd = proxy.Math.Multiply( request )
-		mathMultiplyd.addCallback( print_response )
-
-		dl = DeferredList( [ echoed, pinged, mathAddd, mathMultiplyd ] )
-		dl.addCallback( client_finished )
-
-		return dl
-	def client_finished( dl ):
-		reactor.stop()
-	d.addCallback( client_connected )
-	
-	reactor.run()
+	request = EchoRequest()
+	request.text = "Hello world!"
+	response = proxy.Test.Echo( request )
+	for r in response:
+		PrintMessage( r, stdout, 0 )

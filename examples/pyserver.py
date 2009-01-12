@@ -18,39 +18,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from google.protobuf.service import RpcController
+from test_pb2 import *
+from protobufrpc.synchronous import TcpServer
 
-def flatten( l ):
-	result = []
-	for i in l:
-		if hasattr( i, "__iter__" ) and not isinstance( i, basestring ):
-			result.extend( flatten( i ) )
-		else:
-			result.append( i )
-	return result
+class TestService( Test ):
+    def Echo( self, rpc_controller, request, done ):
+        response = EchoResponse()
+        response.text = request.text
+        done( response )
 
-class Controller( RpcController ):
-	def Reset( self ):
-		pass
+    def Ping( self, rpc_controller, request, done ):
+        response = PingResponse()
+	done( response )
 
-	def Failed( self ):
-		pass
+class MathService( Math ):
+    def Add( self, rpc_controller, request, done ):
+        response = MathResponse()
+        response.result = request.first + request.second
+        done( response )
 
-	def ErrorText( self ):
-		pass
+    def Multiply( self, rpc_controller, request, done ):
+        response = MathResponse()
+        response.result = request.first * request.second
+        done( response )
 
-	def StartCancel( self ):
-		pass
-
-	def SetFailed( self, reason ):
-		print "SetFailed:", reason
-
-	def IsCancelled( self ):
-		pass
-
-	def NotifyOnCancel( self, callback ):
-		pass
-
-class ServiceContainer( dict ):
-	def __getattr__( self, key ):
-		return self[ key ] 
+testService = TestService()
+mathService = MathService()
+server = TcpServer( ("localhost", 8080), testService, mathService )
+server.serve_forever()
