@@ -1,0 +1,13 @@
+package test_suite;
+
+message EchoRequest {
+    required string text = 1;
+}
+
+message EchoResponse {
+    required string text = 1;
+}
+
+service Test {
+    rpc Echo( EchoRequest ) returns( EchoResponse );
+}
