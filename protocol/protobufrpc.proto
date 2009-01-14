@@ -1,5 +1,3 @@
-package pbrpc;
-
 message Rpc {
     repeated Request request = 1;
     repeated Response response = 2;
