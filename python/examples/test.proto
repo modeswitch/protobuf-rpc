@@ -32,3 +32,9 @@ service Math {
     rpc Add( MathBinaryOperationRequest ) returns( MathResponse );
     rpc Multiply( MathBinaryOperationRequest ) returns( MathResponse );
 }
+
+// This file relies on plugins to generate service code.
+option cc_generic_services = true;
+option java_generic_services = true;
+option py_generic_services = true;
+
