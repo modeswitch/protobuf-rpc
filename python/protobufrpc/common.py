@@ -45,7 +45,6 @@ class Controller( RpcController ):
         pass
 
     def SetFailed( self, reason ):
-        print "SetFailed:", reason
         self.error = reason
 
     def IsCancelled( self ):

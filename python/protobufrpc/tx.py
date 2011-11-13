@@ -59,6 +59,7 @@ class BaseChannel( google.protobuf.service.RpcChannel ):
             serializedResponse.error.text = controller.ErrorText()
         else:
             serializedResponse.serialized_response = response.SerializeToString()
+
         return serializedResponse
     
     def serialize_rpc( self, serializedResponse ):
@@ -66,6 +67,9 @@ class BaseChannel( google.protobuf.service.RpcChannel ):
         rpcResponse = rpc.response.add()
         rpcResponse.serialized_response = serializedResponse.serialized_response
         rpcResponse.id = serializedResponse.id
+        if serializedResponse.error.code != 0:
+            rpcResponse.error.code = serializedResponse.error.code
+            rpcResponse.error.text = serializedResponse.error.text
         return rpc
     
     def _call_method( self, methodDescriptor, rpcController, request, responseClass, done ):
